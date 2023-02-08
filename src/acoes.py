@@ -1,11 +1,9 @@
 import os
 import numpy as np
 import pandas as pd
-
-pd.set_option("display.float_format", "{:.2f}".format)
-
 import warnings
 
+pd.set_option("display.float_format", "{:.2f}".format)
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
@@ -48,7 +46,6 @@ class Acoes:
             columns={
                 "Produto": "des_produto",
                 "Instituição": "des_conta",
-                "Código de Negociação": "des_movimentacao",
                 "Código de Negociação": "cod_acao",
                 "Tipo": "tp_acao",
                 "Quantidade": "quantidade",
@@ -68,6 +65,10 @@ class Acoes:
         self.df["des_produto"] = self.df["des_produto"].str.replace(
             "- TRANSMISSORA", "TRANSMISSORA"
         )
+
+        self.df["des_conta"] = self.df["des_conta"].str.lstrip().str.rstrip()
+        self.df["cod_acao"] = self.df["cod_acao"].str.lstrip().str.rstrip()
+        self.df["quantidade"] = self.df["quantidade"].astype(np.int32)
         self.df["vlr_total"] = self.df["vlr_total"].astype(np.float32)
 
 
