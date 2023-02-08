@@ -7,7 +7,7 @@ pd.set_option("display.float_format", "{:.2f}".format)
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
-class Acoes:
+class FIIs:
     def run(self):
         self._load_data()
 
@@ -24,7 +24,7 @@ class Acoes:
         b3_arquivo = os.path.join(b3_posicao, "posicao-2023-02-03.xlsx")
 
         print(f"Loading {b3_arquivo}")
-        self.df = pd.read_excel(b3_arquivo, sheet_name="Acoes")
+        self.df = pd.read_excel(b3_arquivo, sheet_name="Fundo de Investimento")
         print(f"df.shape: {self.df.shape}")
 
     def _drop_columns(self):
@@ -32,11 +32,12 @@ class Acoes:
             columns=[
                 "Conta",
                 "Código ISIN / Distribuição",
-                "Escriturador",
+                "Administrador",
                 "Quantidade Disponível",
                 "Quantidade Indisponível",
                 "Motivo",
                 "Preço de Fechamento",
+                "Tipo",
             ],
             inplace=True,
         )
@@ -47,7 +48,6 @@ class Acoes:
                 "Produto": "des_produto",
                 "Instituição": "des_conta",
                 "Código de Negociação": "cod_acao",
-                "Tipo": "tp_acao",
                 "Quantidade": "quantidade",
                 "Valor Atualizado": "vlr_total",
             },
@@ -61,15 +61,8 @@ class Acoes:
 
     def _transform_columns(self):
         self.df["des_produto"] = self.df["des_produto"].str.lstrip().str.rstrip()
-        self.df["des_produto"] = self.df["des_produto"].str[7:]
-        self.df["des_produto"] = self.df["des_produto"].str.replace(
-            "- TRANSMISSORA", "TRANSMISSORA"
-        )
-
         self.df["des_conta"] = self.df["des_conta"].str.lstrip().str.rstrip()
-        self.df["cod_acao"] = self.df["cod_acao"].str.lstrip().str.rstrip()
-        self.df["quantidade"] = self.df["quantidade"].astype(np.int32)
         self.df["vlr_total"] = self.df["vlr_total"].astype(np.float32)
 
 
-Acoes().run()
+FIIs().run()
