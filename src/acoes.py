@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import warnings
+from setorial import Setorial
 
 pd.set_option("display.float_format", "{:.2f}".format)
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -16,6 +17,7 @@ class Acoes:
         self._rename_columns()
         self._filter_data()
         self._transform_columns()
+        self._merge_setor()
         print(self.df.shape)
 
     def _load_data(self):
@@ -70,6 +72,16 @@ class Acoes:
         self.df["cod_acao"] = self.df["cod_acao"].str.lstrip().str.rstrip()
         self.df["quantidade"] = self.df["quantidade"].astype(np.int32)
         self.df["vlr_total"] = self.df["vlr_total"].astype(np.float32)
+
+    def _merge_setor(self):
+        self.df["tmp_cod_acao"] = self.df["cod_acao"].str[0:4]
+        self.df = pd.merge(
+            self.df, Setorial.get_setorial(), left_on="tmp_cod_acao", right_on="codigo"
+        )
+        self.df.drop(
+            columns=["tmp_cod_acao", "codigo"],
+            inplace=True,
+        )
 
 
 Acoes().run()
