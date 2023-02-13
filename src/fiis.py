@@ -64,5 +64,7 @@ class FIIs:
         self.df["des_conta"] = self.df["des_conta"].str.lstrip().str.rstrip()
         self.df["vlr_total"] = self.df["vlr_total"].astype(np.float32)
 
+        self.df["tp_investimento"] = "Renda Variável"
+
 
 FIIs().run()

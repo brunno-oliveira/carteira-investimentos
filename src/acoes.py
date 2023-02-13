@@ -73,6 +73,8 @@ class Acoes:
         self.df["quantidade"] = self.df["quantidade"].astype(np.int32)
         self.df["vlr_total"] = self.df["vlr_total"].astype(np.float32)
 
+        self.df["tp_investimento"] = "Renda Variável"
+
     def _merge_setor(self):
         self.df["tmp_cod_acao"] = self.df["cod_acao"].str[0:4]
         self.df = pd.merge(
