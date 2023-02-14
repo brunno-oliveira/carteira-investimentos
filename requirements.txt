@@ -3,3 +3,4 @@ pandas==1.5.3
 flake8==6.0.0
 black==22.6.0
 openpyxl==3.0.10
+tabula-py==2.6.0
