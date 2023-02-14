@@ -8,7 +8,7 @@ pd.set_option("display.float_format", "{:.2f}".format)
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
-class BancoInter:
+class BancoInterRendaFixa:
     def run(self):
         self._load_data()
         self._extract_product()
@@ -197,4 +197,4 @@ class BancoInter:
         )
 
 
-BancoInter().run()
+BancoInterRendaFixa().run()
