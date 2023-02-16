@@ -9,7 +9,7 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
 class BancoInterFundos:
-    def run(self):
+    def run(self) -> pd.DataFrame:
         self._load_data()
         self._extract_product()
 
@@ -18,6 +18,7 @@ class BancoInterFundos:
         self._reorder_colums()
         self._transform_columns()
         print(self.df.shape)
+        return self.df
 
     def _load_data(self):
         data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
