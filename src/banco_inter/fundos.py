@@ -38,6 +38,7 @@ class BancoInterFundos:
             columns=self.dfs[2].iloc[0].values, data=[self.dfs[2].iloc[1].values]
         )
         self.df["des_produto"] = des_produto
+        self.df["des_categoria_investimento"] = "Renda Variável"
 
     def _rename_columns(self):
         self.df.rename(
@@ -58,10 +59,10 @@ class BancoInterFundos:
         # fmt: off
         self.df = self.df[
             [
-                "des_produto", "dt_cotacao", "qt_cota",
-                "vlr_cota", "vlr_aplicado", "vlr_bruto",
-                "vlr_ir_previsto", "vlr_iof_previsto",
-                "vlr_liquido"
+                "des_categoria_investimento", "des_produto", 
+                "dt_cotacao", "qt_cota", "vlr_cota", 
+                "vlr_aplicado", "vlr_bruto", "vlr_ir_previsto", 
+                "vlr_iof_previsto", "vlr_liquido"
             ]
         ]
         # fmt:on
@@ -130,6 +131,3 @@ class BancoInterFundos:
             .str.replace(",", ".")
             .astype(np.float32)
         )
-
-
-BancoInterFundos().run()
