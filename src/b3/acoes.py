@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import warnings
-from setorial import Setorial
+from b3.setorial import Setorial
 
 pd.set_option("display.float_format", "{:.2f}".format)
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -25,7 +25,7 @@ class Acoes:
     def _load_data(self):
         data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
         b3_posicao = os.path.join(data_path, "b3_posicao")
-        b3_arquivo = os.path.join(b3_posicao, "posicao-2023-02-03.xlsx")
+        b3_arquivo = os.path.join(b3_posicao, "posicao-2023-02-17.xlsx")
 
         print(f"Loading {b3_arquivo}")
         self.df = pd.read_excel(b3_arquivo, sheet_name="Acoes")
