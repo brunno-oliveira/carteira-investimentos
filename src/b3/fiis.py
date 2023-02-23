@@ -88,13 +88,54 @@ class FIIs:
 
         self.df["des_categoria_investimento"] = "Renda Variável"
 
+        self.df["vlr_total_carteira"] = self.df.loc[:, "vlr_total"].sum()
+        self.df["pct_vlr_fii"] = (
+            self.df["vlr_total"] / self.df["vlr_total_carteira"]
+        ) * 100
+
+        # Por Tipo: [Tijolo, Papel]
+        df_group_tipo = (
+            self.df[["des_tipo", "vlr_total"]]
+            .groupby(["des_tipo"])
+            .sum()
+            .reset_index()
+            .rename(columns={"vlr_total": "vlr_total_tipo"})
+        )
+
+        # Por Segmento: [Shopping, Lógistica, Híbrido etc]
+        df_group_segmento = (
+            self.df[["des_segmento", "vlr_total"]]
+            .groupby(["des_segmento"])
+            .sum()
+            .reset_index()
+            .rename(columns={"vlr_total": "vlr_total_segmento"})
+        )
+
+        self.df = pd.merge(self.df, df_group_tipo, on="des_tipo")
+        self.df = pd.merge(self.df, df_group_segmento, on="des_segmento")
+
+        self.df["pct_vlr_total_tipo"] = (
+            self.df["vlr_total_tipo"] / self.df["vlr_total_carteira"]
+        ) * 100
+        self.df["pct_vlr_total_segmento"] = (
+            self.df["vlr_total_segmento"] / self.df["vlr_total_carteira"]
+        ) * 100
+
     def _reorder_colums(self):
-        # fmt: off
         self.df = self.df[
             [
-                "des_categoria_investimento", "des_conta", 
-                "des_tipo", "des_segmento", "des_produto", 
-                "cod_acao", "quantidade", "vlr_total",
+                "des_categoria_investimento",
+                "des_conta",
+                "des_tipo",
+                "des_segmento",
+                "des_produto",
+                "cod_acao",
+                "quantidade",
+                "vlr_total",
+                "pct_vlr_fii",
+                "vlr_total_tipo",
+                "pct_vlr_total_tipo",
+                "vlr_total_segmento",
+                "pct_vlr_total_segmento",
             ]
         ]
-        # fmt: on
