@@ -66,7 +66,7 @@ class FIIs:
         self.df["des_conta"] = self.df["des_conta"].str.lstrip().str.rstrip()
         self.df["vlr_total"] = self.df["vlr_total"].astype(np.float32)
 
-        self.df["des_tipo"] = self.df["cod_acao"].map(
+        self.df["setor"] = self.df["cod_acao"].map(
             {
                 "BTLG11": "Tijolo",
                 "KNRI11": "Tijolo",
@@ -76,7 +76,7 @@ class FIIs:
             }
         )
 
-        self.df["des_segmento"] = self.df["cod_acao"].map(
+        self.df["subsetor"] = self.df["cod_acao"].map(
             {
                 "BTLG11": "Logística",
                 "KNRI11": "Híbrido",
@@ -87,6 +87,7 @@ class FIIs:
         )
 
         self.df["des_categoria_investimento"] = "Renda Variável"
+        self.df["des_tipo_investimento"] = "FIIs"
 
         self.df["vlr_total_carteira"] = self.df.loc[:, "vlr_total"].sum()
         self.df["pct_vlr_fii"] = (
@@ -95,8 +96,8 @@ class FIIs:
 
         # Por Tipo: [Tijolo, Papel]
         df_group_tipo = (
-            self.df[["des_tipo", "vlr_total"]]
-            .groupby(["des_tipo"])
+            self.df[["setor", "vlr_total"]]
+            .groupby(["setor"])
             .sum()
             .reset_index()
             .rename(columns={"vlr_total": "vlr_total_tipo"})
@@ -104,15 +105,15 @@ class FIIs:
 
         # Por Segmento: [Shopping, Lógistica, Híbrido etc]
         df_group_segmento = (
-            self.df[["des_segmento", "vlr_total"]]
-            .groupby(["des_segmento"])
+            self.df[["subsetor", "vlr_total"]]
+            .groupby(["subsetor"])
             .sum()
             .reset_index()
             .rename(columns={"vlr_total": "vlr_total_segmento"})
         )
 
-        self.df = pd.merge(self.df, df_group_tipo, on="des_tipo")
-        self.df = pd.merge(self.df, df_group_segmento, on="des_segmento")
+        self.df = pd.merge(self.df, df_group_tipo, on="setor")
+        self.df = pd.merge(self.df, df_group_segmento, on="subsetor")
 
         self.df["pct_vlr_total_tipo"] = (
             self.df["vlr_total_tipo"] / self.df["vlr_total_carteira"]
@@ -125,9 +126,10 @@ class FIIs:
         self.df = self.df[
             [
                 "des_categoria_investimento",
+                "des_tipo_investimento",
                 "des_conta",
-                "des_tipo",
-                "des_segmento",
+                "setor",
+                "subsetor",
                 "des_produto",
                 "cod_acao",
                 "quantidade",
