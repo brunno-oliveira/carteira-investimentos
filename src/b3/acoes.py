@@ -99,6 +99,7 @@ class Acoes:
         self.df["vlr_total"] = self.df["vlr_total"].astype(np.float32)
 
         self.df["des_categoria_investimento"] = "Renda Variável"
+        self.df["des_tipo_investimento"] = "Ações"
 
         # Porcentual da carteira
         self.df["vlr_total_carteira"] = self.df["vlr_total"].sum()
@@ -147,6 +148,7 @@ class Acoes:
         self.df = self.df[
             [
                 "des_categoria_investimento",
+                "des_tipo_investimento",
                 "des_conta",
                 "setor",
                 "subsetor",
