@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.3]
+
+- Experimento com o consolidado de renda variável da B3
+
 ## [0.0.2]
 
 - Dados de Renda Fixa e Fundos de Invesimentos do Banco Inter

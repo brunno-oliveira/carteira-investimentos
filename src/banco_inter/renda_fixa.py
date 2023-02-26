@@ -9,7 +9,7 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
 class BancoInterRendaFixa:
-    def run(self):
+    def run(self) -> pd.DataFrame:
         self._load_data()
         self._extract_product()
 
@@ -19,6 +19,7 @@ class BancoInterRendaFixa:
         self._reorder_colums()
         self._transform_columns()
         print(self.df.shape)
+        return self.df
 
     def _load_data(self):
         data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
@@ -79,6 +80,8 @@ class BancoInterRendaFixa:
             ]
         )
 
+        self.df["des_categoria_investimento"] = "Renda Fixa"
+
     def _drop_columns(self):
         self.df.drop(
             columns=[
@@ -110,11 +113,11 @@ class BancoInterRendaFixa:
         # fmt: off
         self.df = self.df[
             [
-                "des_produto", "dt_inicio", "dt_vencimento",
-                "vlr_aplicado", "tp_aplicacao", "taxa_aplicao",
-                "vlr_rendimento", "vlr_retirada", "vlr_desconto",
-                "vlr_bruto", "vlr_previsao_desconto",
-                "vlr_liquido", "vlr_ir_iof"
+                "des_categoria_investimento", "des_produto", 
+                "dt_inicio", "dt_vencimento", "vlr_aplicado", 
+                "tp_aplicacao", "taxa_aplicao", "vlr_rendimento", 
+                "vlr_retirada", "vlr_desconto", "vlr_bruto", 
+                "vlr_previsao_desconto", "vlr_liquido", "vlr_ir_iof"
             ]
         ]
         # fmt:on
@@ -195,6 +198,3 @@ class BancoInterRendaFixa:
             .str.replace(",", ".")
             .astype(np.float32)
         )
-
-
-BancoInterRendaFixa().run()
