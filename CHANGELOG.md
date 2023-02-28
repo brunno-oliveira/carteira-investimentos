@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.4]
+
+- Atualizacao e experimento de consolidação das colunas de renda fixa
+
 ## [0.0.3]
 
 - Experimento com o consolidado de renda variável da B3

@@ -16,8 +16,8 @@ class BancoInterRendaFixa:
         # Transform
         self._drop_columns()
         self._rename_columns()
-        self._reorder_colums()
         self._transform_columns()
+        self._reorder_colums()
         print(self.df.shape)
         return self.df
 
@@ -34,7 +34,8 @@ class BancoInterRendaFixa:
     def _extract_product(self):
         """A leitura do arquivo PDF gera vários DF.
         Para cada novo PRODUTO de investimento é necessário
-        rever essa lógica"""
+        rever essa lógica a cada atualização de novos
+        investimentos"""
 
         # CDB POS DI LIQUIDEZ DIARIA
         des_produto_cdi_pos_liquidez_diaria = self.dfs[2].columns[0]
@@ -43,24 +44,27 @@ class BancoInterRendaFixa:
             ~df_cdi_pos_liquidez_diaria["Nota"].isna()
         ]
         df_cdi_pos_liquidez_diaria["des_produto"] = des_produto_cdi_pos_liquidez_diaria
+        df_cdi_pos_liquidez_diaria["subsetor"] = "CDB"
 
         # CRA ZILOR E16S1
         des_produto_cra_zilor_e16s1 = self.dfs[4].columns[0]
         df_cra_zilor_e16s1 = self.dfs[5]
         df_cra_zilor_e16s1 = df_cra_zilor_e16s1[~df_cra_zilor_e16s1["Nota"].isna()]
-        df_cra_zilor_e16s1["des_produto"] = des_produto_cra_zilor_e16s1
+        df_cra_zilor_e16s1["subsetor"] = "CRA"
 
         # DEBENTURE MNAU13
         des_debenture_mnau13 = self.dfs[6].columns[0]
         df_debenture_mnau13 = self.dfs[7]
         df_debenture_mnau13 = df_debenture_mnau13[~df_debenture_mnau13["Nota"].isna()]
         df_debenture_mnau13["des_produto"] = des_debenture_mnau13
+        df_debenture_mnau13["subsetor"] = "DEBÊNTURE"
 
         # LCA BOCOM
         des_lca_bocom = self.dfs[8].columns[0]
         df_lca_bocom = self.dfs[9]
         df_lca_bocom = df_lca_bocom[~df_lca_bocom["Nota"].isna()]
         df_lca_bocom["des_produto"] = des_lca_bocom
+        df_lca_bocom["subsetor"] = "LCA"
 
         # LCI DI LIQUIDEZ 90 DIAS
         des_lci_di_liquidez_90_dias = self.dfs[10].columns[0]
@@ -69,6 +73,7 @@ class BancoInterRendaFixa:
             ~df_lci_di_liquidez_90_dias["Nota"].isna()
         ]
         df_lci_di_liquidez_90_dias["des_produto"] = des_lci_di_liquidez_90_dias
+        df_lci_di_liquidez_90_dias["subsetor"] = "LCI"
 
         self.df = pd.concat(
             [
@@ -81,6 +86,7 @@ class BancoInterRendaFixa:
         )
 
         self.df["des_categoria_investimento"] = "Renda Fixa"
+        self.df["setor"] = "OUTROS"
 
     def _drop_columns(self):
         self.df.drop(
@@ -108,19 +114,6 @@ class BancoInterRendaFixa:
             },
             inplace=True,
         )
-
-    def _reorder_colums(self):
-        # fmt: off
-        self.df = self.df[
-            [
-                "des_categoria_investimento", "des_produto", 
-                "dt_inicio", "dt_vencimento", "vlr_aplicado", 
-                "tp_aplicacao", "taxa_aplicao", "vlr_rendimento", 
-                "vlr_retirada", "vlr_desconto", "vlr_bruto", 
-                "vlr_previsao_desconto", "vlr_liquido", "vlr_ir_iof"
-            ]
-        ]
-        # fmt:on
 
     def _transform_columns(self):
         self.df["des_produto"] = self.df["des_produto"].str.lstrip().str.rstrip()
@@ -198,3 +191,25 @@ class BancoInterRendaFixa:
             .str.replace(",", ".")
             .astype(np.float32)
         )
+
+    def _reorder_colums(self):
+        self.df = self.df[
+            [
+                "des_categoria_investimento",
+                "setor",
+                "subsetor",
+                "des_produto",
+                "dt_inicio",
+                "dt_vencimento",
+                "vlr_aplicado",
+                "tp_aplicacao",
+                "taxa_aplicao",
+                "vlr_rendimento",
+                "vlr_retirada",
+                "vlr_desconto",
+                "vlr_bruto",
+                "vlr_previsao_desconto",
+                "vlr_liquido",
+                "vlr_ir_iof",
+            ]
+        ]
