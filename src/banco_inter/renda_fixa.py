@@ -44,28 +44,27 @@ class BancoInterRendaFixa:
             ~df_cdi_pos_liquidez_diaria["Nota"].isna()
         ]
         df_cdi_pos_liquidez_diaria["des_produto"] = des_produto_cdi_pos_liquidez_diaria
-        df_cdi_pos_liquidez_diaria["setor"] = "CDB"
+        df_cdi_pos_liquidez_diaria["subsetor"] = "CDB"
 
         # CRA ZILOR E16S1
         des_produto_cra_zilor_e16s1 = self.dfs[4].columns[0]
         df_cra_zilor_e16s1 = self.dfs[5]
         df_cra_zilor_e16s1 = df_cra_zilor_e16s1[~df_cra_zilor_e16s1["Nota"].isna()]
-        df_cra_zilor_e16s1["des_produto"] = des_produto_cra_zilor_e16s1
-        df_cra_zilor_e16s1["setor"] = "CRA"
+        df_cra_zilor_e16s1["subsetor"] = "CRA"
 
         # DEBENTURE MNAU13
         des_debenture_mnau13 = self.dfs[6].columns[0]
         df_debenture_mnau13 = self.dfs[7]
         df_debenture_mnau13 = df_debenture_mnau13[~df_debenture_mnau13["Nota"].isna()]
         df_debenture_mnau13["des_produto"] = des_debenture_mnau13
-        df_debenture_mnau13["setor"] = "DEBÊNTURE"
+        df_debenture_mnau13["subsetor"] = "DEBÊNTURE"
 
         # LCA BOCOM
         des_lca_bocom = self.dfs[8].columns[0]
         df_lca_bocom = self.dfs[9]
         df_lca_bocom = df_lca_bocom[~df_lca_bocom["Nota"].isna()]
         df_lca_bocom["des_produto"] = des_lca_bocom
-        df_lca_bocom["setor"] = "LCA"
+        df_lca_bocom["subsetor"] = "LCA"
 
         # LCI DI LIQUIDEZ 90 DIAS
         des_lci_di_liquidez_90_dias = self.dfs[10].columns[0]
@@ -74,7 +73,7 @@ class BancoInterRendaFixa:
             ~df_lci_di_liquidez_90_dias["Nota"].isna()
         ]
         df_lci_di_liquidez_90_dias["des_produto"] = des_lci_di_liquidez_90_dias
-        df_lci_di_liquidez_90_dias["setor"] = "LCI"
+        df_lci_di_liquidez_90_dias["subsetor"] = "LCI"
 
         self.df = pd.concat(
             [
@@ -87,6 +86,7 @@ class BancoInterRendaFixa:
         )
 
         self.df["des_categoria_investimento"] = "Renda Fixa"
+        self.df["setor"] = "OUTROS"
 
     def _drop_columns(self):
         self.df.drop(
@@ -197,6 +197,7 @@ class BancoInterRendaFixa:
             [
                 "des_categoria_investimento",
                 "setor",
+                "subsetor",
                 "des_produto",
                 "dt_inicio",
                 "dt_vencimento",
