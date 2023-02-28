@@ -16,6 +16,7 @@ class TesouroDireto:
         self._rename_columns()
         self._filter_data()
         self._transform_columns()
+        self._reorder_colums()
         print(self.df.shape)
         return self.df
 
@@ -60,7 +61,8 @@ class TesouroDireto:
 
     def _transform_columns(self):
         self.df["des_produto"] = self.df["des_produto"].str.lstrip().str.rstrip()
-        self.df["setor"] = self.df["setor"].str.lstrip().str.rstrip().str.upper()
+        self.df["subsetor"] = self.df["setor"].str.lstrip().str.rstrip().str.upper()
+        self.df["setor"] = "TESOURO DIRETO"
 
         self.df["dt_vencimento"] = pd.to_datetime(
             self.df["dt_vencimento"], format="%d/%m/%Y"
@@ -72,4 +74,18 @@ class TesouroDireto:
         self.df["vlr_bruto"] = self.df["vlr_bruto"].astype(np.float32)
         self.df["vlr_liquido"] = self.df["vlr_liquido"].astype(np.float32)
 
-        self.df["tp_investimento"] = "Renda Fixa"
+        self.df["des_categoria_investimento"] = "Renda Fixa"
+
+    def _reorder_colums(self):
+        self.df = self.df[
+            [
+                "des_categoria_investimento",
+                "setor",
+                "subsetor",
+                "des_produto",
+                "quantidade",
+                "vlr_aplicado",
+                "vlr_bruto",
+                "vlr_liquido",
+            ]
+        ]
