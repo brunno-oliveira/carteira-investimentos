@@ -17,11 +17,12 @@ class TesouroDireto:
         self._filter_data()
         self._transform_columns()
         print(self.df.shape)
+        return self.df
 
     def _load_data(self):
         data_path = os.path.join(os.path.dirname(__file__), "data")
         b3_posicao = os.path.join(data_path, "b3_posicao")
-        b3_arquivo = os.path.join(b3_posicao, "posicao-2023-02-03.xlsx")
+        b3_arquivo = os.path.join(b3_posicao, "posicao-2023-02-24.xlsx")
 
         print(f"Loading {b3_arquivo}")
         self.df = pd.read_excel(b3_arquivo, sheet_name="Tesouro Direto")
@@ -44,7 +45,7 @@ class TesouroDireto:
         self.df.rename(
             columns={
                 "Produto": "des_produto",
-                "Indexador": "indexador",
+                "Indexador": "setor",
                 "Vencimento": "dt_vencimento",
                 "Quantidade": "quantidade",
                 "Valor Aplicado": "vlr_aplicado",
@@ -55,13 +56,11 @@ class TesouroDireto:
         )
 
     def _filter_data(self):
-        self.df = self.df[
-            (~self.df["des_produto"].isna()) & (~self.df["indexador"].isna())
-        ]
+        self.df = self.df[(~self.df["des_produto"].isna()) & (~self.df["setor"].isna())]
 
     def _transform_columns(self):
         self.df["des_produto"] = self.df["des_produto"].str.lstrip().str.rstrip()
-        self.df["indexador"] = self.df["indexador"].str.lstrip().str.rstrip()
+        self.df["setor"] = self.df["setor"].str.lstrip().str.rstrip().str.upper()
 
         self.df["dt_vencimento"] = pd.to_datetime(
             self.df["dt_vencimento"], format="%d/%m/%Y"
@@ -74,6 +73,3 @@ class TesouroDireto:
         self.df["vlr_liquido"] = self.df["vlr_liquido"].astype(np.float32)
 
         self.df["tp_investimento"] = "Renda Fixa"
-
-
-TesouroDireto().run()
