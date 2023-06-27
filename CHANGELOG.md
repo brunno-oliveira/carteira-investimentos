@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.5]
+
+- Refatorado a lógica para Renda Fixa do Banco Inter para não precisar
+alterar para cada novo título
+
 ## [0.0.4]
 
 - Atualizacao e experimento de consolidação das colunas de renda fixa

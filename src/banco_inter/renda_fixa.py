@@ -29,62 +29,51 @@ class BancoInterRendaFixa:
         )
 
         print(f"Loading {banco_inter_file}")
-        self.dfs = tabula.read_pdf(banco_inter_file, lattice=True)
+        self.dfs = tabula.read_pdf(banco_inter_file, lattice=True, pages="all")
 
     def _extract_product(self):
         """A leitura do arquivo PDF gera vários DF.
-        Para cada novo PRODUTO de investimento é necessário
-        rever essa lógica a cada atualização de novos
-        investimentos"""
+        A lógica começa pulando os dois primeiros DFs da lista
+        pois são informações de cabeçalho.
+        """
 
-        # CDB POS DI LIQUIDEZ DIARIA
-        des_produto_cdi_pos_liquidez_diaria = self.dfs[2].columns[0]
-        df_cdi_pos_liquidez_diaria = self.dfs[3]
-        df_cdi_pos_liquidez_diaria = df_cdi_pos_liquidez_diaria[
-            ~df_cdi_pos_liquidez_diaria["Nota"].isna()
-        ]
-        df_cdi_pos_liquidez_diaria["des_produto"] = des_produto_cdi_pos_liquidez_diaria
-        df_cdi_pos_liquidez_diaria["subsetor"] = "CDB"
+        list_des_produto = []
+        list_df_conteudo = []
+        inicio_produtos = 2
+        for index in range(inicio_produtos, len(self.dfs)):
+            if index % 2 == 0:
+                list_des_produto.append(self.dfs[index].columns[0].upper())
+            else:
+                list_df_conteudo.append(self.dfs[index])
 
-        # CRA ZILOR E16S1
-        des_produto_cra_zilor_e16s1 = self.dfs[4].columns[0]
-        df_cra_zilor_e16s1 = self.dfs[5]
-        df_cra_zilor_e16s1 = df_cra_zilor_e16s1[~df_cra_zilor_e16s1["Nota"].isna()]
-        df_cra_zilor_e16s1["subsetor"] = "CRA"
+        list_df_renda_fixa = []
+        for des_produto, df_conteudo in zip(list_des_produto, list_df_conteudo):
+            df_tmp = df_conteudo.copy()
+            """Produtos com mais de uma nota (investimentos em datas diferente)
+            possuem mais de uma linha de registro e sempre aparece uma linha em branco.
+            """
+            df_tmp = df_tmp[~df_tmp["Nota"].isna()]
 
-        # DEBENTURE MNAU13
-        des_debenture_mnau13 = self.dfs[6].columns[0]
-        df_debenture_mnau13 = self.dfs[7]
-        df_debenture_mnau13 = df_debenture_mnau13[~df_debenture_mnau13["Nota"].isna()]
-        df_debenture_mnau13["des_produto"] = des_debenture_mnau13
-        df_debenture_mnau13["subsetor"] = "DEBÊNTURE"
+            df_tmp["des_produto"] = des_produto
+            if "CDB" in des_produto:
+                df_tmp["subsetor"] = "CDB"
+            elif "CRA" in des_produto:
+                df_tmp["subsetor"] = "CRA"
+            elif "CRI" in des_produto:
+                df_tmp["subsetor"] = "CRI"
+            elif "DEBENTURE" in des_produto:
+                df_tmp["subsetor"] = "DEBENTURE"
+            elif "LCA" in des_produto:
+                df_tmp["subsetor"] = "LCA"
+            elif "LCI" in des_produto:
+                df_tmp["subsetor"] = "LCI"
+            elif "CANAIS DE ATENDIMENTO INTER" in des_produto:
+                pass
+            else:
+                raise Exception(f"Produto {des_produto} ainda nao configurado.")
+            list_df_renda_fixa.append(df_tmp)
 
-        # LCA BOCOM
-        des_lca_bocom = self.dfs[8].columns[0]
-        df_lca_bocom = self.dfs[9]
-        df_lca_bocom = df_lca_bocom[~df_lca_bocom["Nota"].isna()]
-        df_lca_bocom["des_produto"] = des_lca_bocom
-        df_lca_bocom["subsetor"] = "LCA"
-
-        # LCI DI LIQUIDEZ 90 DIAS
-        des_lci_di_liquidez_90_dias = self.dfs[10].columns[0]
-        df_lci_di_liquidez_90_dias = self.dfs[11]
-        df_lci_di_liquidez_90_dias = df_lci_di_liquidez_90_dias[
-            ~df_lci_di_liquidez_90_dias["Nota"].isna()
-        ]
-        df_lci_di_liquidez_90_dias["des_produto"] = des_lci_di_liquidez_90_dias
-        df_lci_di_liquidez_90_dias["subsetor"] = "LCI"
-
-        self.df = pd.concat(
-            [
-                df_cdi_pos_liquidez_diaria,
-                df_cra_zilor_e16s1,
-                df_debenture_mnau13,
-                df_lca_bocom,
-                df_lci_di_liquidez_90_dias,
-            ]
-        )
-
+        self.df = pd.concat(list_df_renda_fixa).reset_index().drop(columns="index")
         self.df["des_categoria_investimento"] = "Renda Fixa"
         self.df["setor"] = "OUTROS"
 
@@ -187,6 +176,7 @@ class BancoInterRendaFixa:
         self.df["vlr_ir_iof"] = (
             self.df["vlr_ir_iof"]
             .str.replace("R\$", "")
+            .str.replace("%", "")
             .str.replace(".", "")
             .str.replace(",", ".")
             .astype(np.float32)
@@ -213,3 +203,6 @@ class BancoInterRendaFixa:
                 "vlr_ir_iof",
             ]
         ]
+
+
+BancoInterRendaFixa().run()
